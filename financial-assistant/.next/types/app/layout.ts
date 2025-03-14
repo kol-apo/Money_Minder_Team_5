@@ -1,4 +1,4 @@
-// File: /mnt/c/Users/LENOVO/OneDrive/Desktop/MoneyMinder/financial-assistant/app/layout.tsx
+// File: /mnt/c/Users/LENOVO/.vscode/Money_Minder_Team_5/financial-assistant/app/layout.tsx
 import * as entry from '../../../app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
