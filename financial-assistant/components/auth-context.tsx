@@ -1,23 +1,22 @@
 "use client"
 
 import type React from "react"
+
 import { createContext, useContext, useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
 
 type User = {
   id: string
   name: string
   email: string
-  currency: string
-  bio?: string
+  avatar?: string
 }
 
 type AuthContextType = {
   user: User | null
   isLoading: boolean
   login: (email: string, password: string) => Promise<void>
-  register: (name: string, email: string, password: string, currency: string) => Promise<void>
-  logout: () => Promise<void>
+  register: (name: string, email: string, password: string) => Promise<void>
+  logout: () => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -25,76 +24,60 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const router = useRouter()
 
   // Check if user is logged in on mount
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await fetch("/api/auth/me")
-        if (response.ok) {
-          const data = await response.json()
-          setUser(data.user)
-        }
-      } catch (error) {
-        console.error("Auth check error:", error)
-      } finally {
-        setIsLoading(false)
-      }
+    const storedUser = localStorage.getItem("moneyminder_user")
+    if (storedUser) {
+      setUser(JSON.parse(storedUser))
     }
-
-    checkAuth()
+    setIsLoading(false)
   }, [])
 
-  // Login function
+  // Mock login function - in a real app, this would call your API
   const login = async (email: string, password: string) => {
     setIsLoading(true)
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      })
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || "Login failed")
+      // Mock user data - in a real app, this would come from your backend
+      const userData: User = {
+        id: "user_123",
+        name: "Demo User",
+        email: email,
+        avatar: "/placeholder.svg?height=40&width=40",
       }
 
-      const data = await response.json()
-      setUser(data.user)
-      router.push("/dashboard")
+      setUser(userData)
+      localStorage.setItem("moneyminder_user", JSON.stringify(userData))
     } catch (error) {
-      console.error("Login error:", error)
+      console.error("Login failed:", error)
       throw error
     } finally {
       setIsLoading(false)
     }
   }
 
-  // Register function
-  const register = async (name: string, email: string, password: string, currency: string) => {
+  // Mock register function
+  const register = async (name: string, email: string, password: string) => {
     setIsLoading(true)
     try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, email, password, currency }),
-      })
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || "Registration failed")
+      // Mock user data
+      const userData: User = {
+        id: "user_" + Math.random().toString(36).substr(2, 9),
+        name: name,
+        email: email,
+        avatar: "/placeholder.svg?height=40&width=40",
       }
 
-      // After registration, log the user in
-      await login(email, password)
+      setUser(userData)
+      localStorage.setItem("moneyminder_user", JSON.stringify(userData))
     } catch (error) {
-      console.error("Registration error:", error)
+      console.error("Registration failed:", error)
       throw error
     } finally {
       setIsLoading(false)
@@ -102,34 +85,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   // Logout function
-  const logout = async () => {
-    setIsLoading(true)
-    try {
-      await fetch("/api/auth/logout", {
-        method: "POST",
-      })
-      setUser(null)
-      router.push("/login")
-    } catch (error) {
-      console.error("Logout error:", error)
-    } finally {
-      setIsLoading(false)
-    }
+  const logout = () => {
+    setUser(null)
+    localStorage.removeItem("moneyminder_user")
   }
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isLoading,
-        login,
-        register,
-        logout,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  )
+  return <AuthContext.Provider value={{ user, isLoading, login, register, logout }}>{children}</AuthContext.Provider>
 }
 
 export function useAuth() {
