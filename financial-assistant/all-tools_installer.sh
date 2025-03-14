@@ -80,6 +80,14 @@ else
     echo "Git is already installed."
 fi
 
+# Install Radix UI and Class Variance Authority
+if ! command_exists npx; then
+    echo "Installing Radix UI and Class Variance Authority..."
+    npm install @radix-ui/react-slot @radix-ui/react-dropdown-menu class-variance-authority --legacy-peer-deps
+else
+    echo "Radix UI and Class Variance Authority are already installed."
+fi
+
 # Install Netlify CLI globally if not installed
 if ! command_exists netlify; then
     echo "Installing Netlify CLI..."
