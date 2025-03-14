@@ -1,7 +1,7 @@
 "use client"
 
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from "recharts"
-import { useFinancial } from "@/contexts/financial-context"
+import { useFinancial } from "@/components/financial-context"
 import { useMemo } from "react"
 
 export function Overview() {

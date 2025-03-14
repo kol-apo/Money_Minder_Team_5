@@ -1,7 +1,7 @@
 "use client"
 
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip, Legend } from "recharts"
-import { useFinancial } from "@/contexts/financial-context"
+import { useFinancial } from "@/components/financial-context"
 import { useMemo } from "react"
 
 const COLORS = ["hsl(var(--primary))", "#3b82f6", "#f59e0b", "#10b981", "#8b5cf6", "#6b7280"]

@@ -2,7 +2,7 @@
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { ArrowDownIcon, CreditCard, Home, Utensils, Car, Zap, HeartPulse, Shirt } from "lucide-react"
-import { useFinancial } from "@/contexts/financial-context"
+import { useFinancial } from "@/components/financial-context"
 
 // Map of category to icon
 const categoryIcons: Record<string, any> = {

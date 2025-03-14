@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Download, Filter } from "lucide-react"
 
 export const metadata: Metadata = {
-  title: "Spending Analysis | MoneyMinder",
+  title: "Spending Analysis | FinAssist",
   description: "Analyze your spending patterns and track expenses",
 }
 

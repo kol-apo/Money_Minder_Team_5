@@ -4,7 +4,7 @@ import { FinancialAdvisor } from "@/components/advisor/financial-advisor"
 import { FinancialTips } from "@/components/advisor/financial-tips"
 
 export const metadata: Metadata = {
-  title: "Financial Advisor | MoneyMinder",
+  title: "Financial Advisor | FinAssist",
   description: "Get personalized financial advice and recommendations",
 }
 

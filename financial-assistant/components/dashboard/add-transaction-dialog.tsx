@@ -14,8 +14,8 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useFinancial } from "@/contexts/financial-context"
+import { useFinancial } from "@/components/financial-context"
+import { toast } from "@/hooks/use-toast"
 
 interface AddTransactionDialogProps {
   open: boolean
@@ -24,32 +24,45 @@ interface AddTransactionDialogProps {
 
 export function AddTransactionDialog({ open, onOpenChange }: AddTransactionDialogProps) {
   const { addTransaction } = useFinancial()
-
   const [description, setDescription] = useState("")
   const [amount, setAmount] = useState("")
-  const [category, setCategory] = useState("")
-  const [isIncome, setIsIncome] = useState(false)
+  const [category, setCategory] = useState("Other")
+  const [transactionType, setTransactionType] = useState("expense")
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    const parsedAmount = Number.parseFloat(amount)
-    if (isNaN(parsedAmount) || parsedAmount <= 0) return
+    if (!description || !amount || Number.parseFloat(amount) <= 0) {
+      toast({
+        title: "Invalid transaction",
+        description: "Please enter a valid description and amount.",
+        variant: "destructive",
+      })
+      return
+    }
 
+    // Convert amount to positive or negative based on transaction type
+    const transactionAmount = transactionType === "income" ? Number.parseFloat(amount) : -Number.parseFloat(amount)
+
+    // Add the transaction
     addTransaction({
       date: new Date().toISOString().split("T")[0],
       description,
-      amount: isIncome ? parsedAmount : -parsedAmount,
-      category: category || (isIncome ? "Income" : "Other"),
+      amount: transactionAmount,
+      category: transactionType === "income" ? "Income" : category,
     })
 
-    // Reset form
+    // Reset form and close dialog
     setDescription("")
     setAmount("")
-    setCategory("")
-    setIsIncome(false)
+    setCategory("Other")
+    setTransactionType("expense")
 
-    // Close dialog
+    toast({
+      title: "Transaction added",
+      description: "Your transaction has been recorded successfully.",
+    })
+
     onOpenChange(false)
   }
 
@@ -58,84 +71,71 @@ export function AddTransactionDialog({ open, onOpenChange }: AddTransactionDialo
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Add Transaction</DialogTitle>
-          <DialogDescription>Add a new transaction to track your income and expenses.</DialogDescription>
+          <DialogDescription>Enter the details of your transaction below.</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="transaction-type" className="text-right">
-                Type
-              </Label>
-              <div className="col-span-3">
-                <Select
-                  value={isIncome ? "income" : "expense"}
-                  onValueChange={(value) => setIsIncome(value === "income")}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="income">Income</SelectItem>
-                    <SelectItem value="expense">Expense</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="grid grid-cols-2 gap-4">
+              <Button
+                type="button"
+                variant={transactionType === "expense" ? "default" : "outline"}
+                onClick={() => setTransactionType("expense")}
+                className="w-full"
+              >
+                Expense
+              </Button>
+              <Button
+                type="button"
+                variant={transactionType === "income" ? "default" : "outline"}
+                onClick={() => setTransactionType("income")}
+                className="w-full"
+              >
+                Income
+              </Button>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="description" className="text-right">
-                Description
-              </Label>
+            <div className="space-y-2">
+              <Label htmlFor="description">Description</Label>
               <Input
                 id="description"
+                placeholder="e.g., Grocery shopping"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="col-span-3"
                 required
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="amount" className="text-right">
-                Amount
-              </Label>
+            <div className="space-y-2">
+              <Label htmlFor="amount">Amount</Label>
               <Input
                 id="amount"
                 type="number"
+                placeholder="0.00"
                 step="0.01"
-                min="0.01"
+                min="0"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="col-span-3"
                 required
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="category" className="text-right">
-                Category
-              </Label>
-              <div className="col-span-3">
-                <Select value={category} onValueChange={setCategory}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {isIncome ? (
-                      <SelectItem value="Income">Income</SelectItem>
-                    ) : (
-                      <>
-                        <SelectItem value="Housing">Housing</SelectItem>
-                        <SelectItem value="Food">Food</SelectItem>
-                        <SelectItem value="Transportation">Transportation</SelectItem>
-                        <SelectItem value="Utilities">Utilities</SelectItem>
-                        <SelectItem value="Healthcare">Healthcare</SelectItem>
-                        <SelectItem value="Shopping">Shopping</SelectItem>
-                        <SelectItem value="Entertainment">Entertainment</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
-                      </>
-                    )}
-                  </SelectContent>
-                </Select>
+            {transactionType === "expense" && (
+              <div className="space-y-2">
+                <Label htmlFor="category">Category</Label>
+                <select
+                  id="category"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                >
+                  <option value="Housing">Housing</option>
+                  <option value="Food">Food</option>
+                  <option value="Transportation">Transportation</option>
+                  <option value="Utilities">Utilities</option>
+                  <option value="Entertainment">Entertainment</option>
+                  <option value="Shopping">Shopping</option>
+                  <option value="Healthcare">Healthcare</option>
+                  <option value="Other">Other</option>
+                </select>
               </div>
-            </div>
+            )}
           </div>
           <DialogFooter>
             <Button type="submit">Add Transaction</Button>

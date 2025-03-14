@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { ArrowRight, Wallet, BarChart2, MessageSquare, Shield, TrendingUp } from "lucide-react"
-import { Button } from "@/frontend/components/ui/button"
+import { Button } from "@/components/ui/button"
 
 export const metadata: Metadata = {
   title: "MoneyMinder - Your Personal Financial Assistant",

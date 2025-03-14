@@ -10,7 +10,7 @@ import { SpendingByCategory } from "@/components/dashboard/spending-by-category"
 import { SavingsGoals } from "@/components/dashboard/savings-goals"
 import { Button } from "@/components/ui/button"
 import { Download, Filter, Plus } from "lucide-react"
-import { useFinancial } from "@/contexts/financial-context"
+import { useFinancial } from "@/components/financial-context"
 import { AddTransactionDialog } from "@/components/dashboard/add-transaction-dialog"
 import { useState } from "react"
 
