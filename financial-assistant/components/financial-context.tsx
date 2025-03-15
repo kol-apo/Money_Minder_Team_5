@@ -46,29 +46,7 @@ type FinancialContextType = {
   isLoading: boolean
 }
 
-const defaultSavingsGoals = [
-  {
-    id: "1",
-    name: "Emergency Fund",
-    target: 10000,
-    current: 0,
-    deadline: "2023-12-31",
-  },
-  {
-    id: "2",
-    name: "Vacation",
-    target: 3000,
-    current: 0,
-    deadline: "2023-08-15",
-  },
-  {
-    id: "3",
-    name: "New Car",
-    target: 20000,
-    current: 0,
-    deadline: "2024-06-30",
-  },
-]
+const defaultSavingsGoals: SavingsGoal[] = []
 
 const FinancialContext = createContext<FinancialContextType | undefined>(undefined)
 

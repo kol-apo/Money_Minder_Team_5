@@ -60,6 +60,9 @@ export function FinancialSetup() {
         addExpense(Number.parseFloat(otherExpenses), "Other")
       }
 
+      // Mark setup as completed
+      localStorage.setItem("moneyminder_setup_completed", "true")
+
       toast({
         title: "Financial setup complete",
         description: "Your financial information has been saved.",

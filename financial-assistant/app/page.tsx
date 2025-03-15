@@ -35,19 +35,19 @@ export default function Home() {
                   </p>
                 </div>
 
-                {/* Stats */}
+                {/* Features Preview */}
                 <div className="grid grid-cols-3 gap-4 p-6 rounded-xl bg-white/5 backdrop-blur-sm border border-border/50 shadow-sm">
                   <div className="text-center">
-                    <p className="text-sm text-muted-foreground">Users</p>
-                    <p className="text-2xl font-bold text-primary">10k+</p>
+                    <p className="text-sm text-muted-foreground">Track</p>
+                    <p className="text-2xl font-bold text-primary">Expenses</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-sm text-muted-foreground">Saved</p>
-                    <p className="text-2xl font-bold text-primary">$2M+</p>
+                    <p className="text-sm text-muted-foreground">Set</p>
+                    <p className="text-2xl font-bold text-primary">Goals</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-sm text-muted-foreground">Rating</p>
-                    <p className="text-2xl font-bold text-primary">4.9★</p>
+                    <p className="text-sm text-muted-foreground">Get</p>
+                    <p className="text-2xl font-bold text-primary">Insights</p>
                   </div>
                 </div>
 
@@ -84,7 +84,7 @@ export default function Home() {
                         <Wallet className="h-5 w-5 text-primary" />
                         <span className="font-medium">Balance</span>
                       </div>
-                      <p className="text-xl font-bold mt-1 text-primary">$12,580</p>
+                      <p className="text-xl font-bold mt-1 text-primary">$0.00</p>
                     </div>
 
                     <div className="absolute -bottom-10 -right-10 p-4 bg-white/10 dark:bg-black/10 backdrop-blur-xl rounded-lg shadow-lg border border-white/20 dark:border-white/5 transform rotate-[6deg]">
@@ -92,7 +92,7 @@ export default function Home() {
                         <TrendingUp className="h-5 w-5 text-primary" />
                         <span className="font-medium">Savings</span>
                       </div>
-                      <p className="text-xl font-bold mt-1 text-primary">32.1%</p>
+                      <p className="text-xl font-bold mt-1 text-primary">0.0%</p>
                     </div>
                   </div>
                 </div>
