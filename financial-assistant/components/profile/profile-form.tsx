@@ -9,8 +9,6 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/hooks/use-toast"
 import { useFinancial } from "@/components/financial-context"
-import { useAuth } from "@/components/auth-context"
-import { useEffect } from "react"
 
 const profileFormSchema = z.object({
   name: z.string().min(2, {
@@ -27,62 +25,27 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>
 
 export function ProfileForm() {
   const { currency, setCurrency } = useFinancial()
-  const { user } = useAuth()
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      bio: "",
+      name: "John Doe",
+      email: "john.doe@example.com",
+      bio: "I'm a software engineer interested in personal finance and investing.",
       currency: currency,
     },
   })
 
-  // Update form when user data is available
-  useEffect(() => {
-    if (user) {
-      form.reset({
-        name: user.name || "",
-        email: user.email || "",
-        bio: user.bio || "",
-        currency: user.currency || currency,
-      })
+  function onSubmit(data: ProfileFormValues) {
+    // Update currency if changed
+    if (data.currency !== currency) {
+      setCurrency(data.currency as any)
     }
-  }, [user, currency, form])
 
-  async function onSubmit(data: ProfileFormValues) {
-    try {
-      // Update profile via API
-      const response = await fetch("/api/profile", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || "Failed to update profile")
-      }
-
-      // Update currency if changed
-      if (data.currency !== currency) {
-        setCurrency(data.currency as any)
-      }
-
-      toast({
-        title: "Profile updated",
-        description: "Your profile has been updated successfully.",
-      })
-    } catch (error: any) {
-      toast({
-        title: "Update failed",
-        description: error.message || "There was an error updating your profile.",
-        variant: "destructive",
-      })
-    }
+    toast({
+      title: "Profile updated",
+      description: "Your profile has been updated successfully.",
+    })
   }
 
   return (

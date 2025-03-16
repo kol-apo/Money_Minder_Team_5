@@ -5,7 +5,7 @@ import { Download, FileText, BarChart2, PieChart } from "lucide-react"
 import { ReportsList } from "@/components/reports/reports-list"
 
 export const metadata: Metadata = {
-  title: "Financial Reports | MoneyMinder",
+  title: "Financial Reports | FinAssist",
   description: "Generate and download financial reports and analysis",
 }
 

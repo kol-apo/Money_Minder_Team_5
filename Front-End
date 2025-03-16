@@ -1,0 +1,491 @@
+import React, { useState, useEffect } from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+
+const FinanceCopilot = () => {
+  const [income, setIncome] = useState('');
+  const [expenses, setExpenses] = useState('');
+  const [riskLevel, setRiskLevel] = useState('Medium');
+  const [report, setReport] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('overview');
+  
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+  const RISK_COLORS = {
+    'Low': '#4CAF50',
+    'Medium': '#2196F3',
+    'Bro Danger': '#F44336'
+  };
+  
+  const fetchAdvice = async () => {
+    if (!income || !expenses) return;
+    
+    const incomeNum = parseFloat(income);
+    const expensesNum = parseFloat(expenses);
+    
+    if (isNaN(incomeNum) || isNaN(expensesNum) || incomeNum <= 0) return;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // In production, this would call your backend API
+      // Simulating API call for demonstration
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const savings = incomeNum - expensesNum;
+      const savingsPercent = (savings / incomeNum * 100).toFixed(1);
+      
+      const data = {
+        income: incomeNum,
+        expenses: expensesNum,
+        savings: savings,
+        savings_percent: parseFloat(savingsPercent),
+        essential_expenses: incomeNum * 0.5,
+        discretionary_spending: incomeNum * 0.3,
+        savings_investments: incomeNum * 0.2,
+        risk_level: riskLevel,
+        investment_rationale: getInvestmentRationale(riskLevel),
+        pro_tip: getProTip(riskLevel, parseFloat(savingsPercent)),
+        investments: getInvestments(riskLevel)
+      };
+      
+      setReport(data);
+    } catch (err) {
+      setError('Error fetching financial advice. Please try again.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const getInvestmentRationale = (risk) => {
+    switch(risk) {
+      case 'Low':
+        return "Focus on capital preservation with steady, modest returns and minimal volatility.";
+      case 'Medium':
+        return "Balance between growth and safety with moderate volatility tolerance.";
+      case 'Bro Danger':
+        return "Maximum growth potential with significant volatility. Not for the faint of heart!";
+      default:
+        return "";
+    }
+  };
+  
+  const getProTip = (risk, savingsPercent) => {
+    if (savingsPercent < 10) {
+      return "Consider the 50/30/20 rule to increase your savings rate - your future self will thank you.";
+    }
+    
+    switch(risk) {
+      case 'Low':
+        return "Build an emergency fund covering 6 months of expenses before investing elsewhere.";
+      case 'Medium':
+        return "Consider dollar-cost averaging to reduce timing risk in the market.";
+      case 'Bro Danger':
+        return "Only allocate money you can afford to lose to high-risk investments. Diversify across sectors and geographies.";
+      default:
+        return "";
+    }
+  };
+  
+  const getInvestments = (risk) => {
+    switch(risk) {
+      case 'Low':
+        return [
+          {
+            name: "Treasury Bonds (10-Year)",
+            current_yield: 4.2,
+            risk_score: 1.2,
+            description: "Government-backed bonds with very low risk profile",
+            historical_data: [3.8, 3.9, 4.0, 4.1, 4.2, 4.3]
+          },
+          {
+            name: "High-Yield Savings Account",
+            current_yield: 4.5,
+            risk_score: 0.5,
+            description: "FDIC-insured savings with competitive interest rates",
+            historical_data: [3.5, 3.8, 4.0, 4.2, 4.5, 4.5]
+          },
+          {
+            name: "Short-Term Corporate Bonds ETF",
+            current_yield: 4.8,
+            risk_score: 2.1,
+            description: "Diversified exposure to investment-grade corporate bonds",
+            historical_data: [4.0, 4.2, 4.5, 4.6, 4.7, 4.8]
+          }
+        ];
+      case 'Medium':
+        return [
+          {
+            name: "S&P 500 Index Fund",
+            current_yield: 1.7,
+            risk_score: 5.5,
+            description: "Broad market exposure to large US companies",
+            historical_data: [1.5, 1.6, 1.5, 1.6, 1.7, 1.7]
+          },
+          {
+            name: "Dividend Aristocrats ETF",
+            current_yield: 2.8,
+            risk_score: 4.2,
+            description: "Companies with 25+ years of dividend increases",
+            historical_data: [2.5, 2.6, 2.7, 2.7, 2.8, 2.8]
+          },
+          {
+            name: "Balanced 60/40 Fund",
+            current_yield: 3.2,
+            risk_score: 4.8,
+            description: "Classic portfolio with 60% stocks and 40% bonds",
+            historical_data: [2.8, 2.9, 3.0, 3.1, 3.2, 3.2]
+          }
+        ];
+      case 'Bro Danger':
+        return [
+          {
+            name: "Emerging Tech ETF",
+            current_yield: 12.5,
+            risk_score: 8.5,
+            description: "High-growth potential in cutting-edge technologies",
+            historical_data: [8.0, 9.5, 10.0, 11.5, 12.0, 12.5]
+          },
+          {
+            name: "Small Cap Growth Fund",
+            current_yield: 14.0,
+            risk_score: 8.9,
+            description: "Aggressive growth through smaller companies",
+            historical_data: [10.0, 11.0, 12.0, 12.5, 13.5, 14.0]
+          },
+          {
+            name: "Crypto-Adjacent Equities",
+            current_yield: 18.5,
+            risk_score: 9.7,
+            description: "Companies with exposure to digital assets ecosystem",
+            historical_data: [12.0, 14.0, 15.0, 16.0, 17.0, 18.5]
+          }
+        ];
+      default:
+        return [];
+    }
+  };
+  
+  const getBudgetPieData = () => {
+    if (!report) return [];
+    
+    return [
+      { name: 'Essential', value: report.essential_expenses },
+      { name: 'Discretionary', value: report.discretionary_spending },
+      { name: 'Savings', value: report.savings_investments }
+    ];
+  };
+  
+  const getRiskScoreData = () => {
+    if (!report) return [];
+    
+    return report.investments.map(inv => ({
+      name: inv.name,
+      score: inv.risk_score,
+      maxScore: 10
+    }));
+  };
+  
+  const getYieldComparisonData = () => {
+    if (!report) return [];
+    
+    return report.investments.map(inv => ({
+      name: inv.name,
+      yield: inv.current_yield
+    }));
+  };
+  
+  const getTrendData = (investmentIndex) => {
+    if (!report || !report.investments[investmentIndex]) return [];
+    
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+    return report.investments[investmentIndex].historical_data.map((value, index) => ({
+      month: months[index],
+      yield: value
+    }));
+  };
+  
+  useEffect(() => {
+    // Clear any previous errors
+    setError(null);
+  }, [income, expenses, riskLevel]);
+
+  return (
+    <div className="p-6 max-w-6xl mx-auto bg-white rounded-lg shadow-lg">
+      <h1 className="text-3xl font-bold text-blue-600 mb-6 text-center">AI Finance Copilot</h1>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 bg-gray-50 p-6 rounded-lg">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Monthly Income ($)</label>
+          <input
+            type="number"
+            value={income}
+            onChange={(e) => setIncome(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="3000"
+            min="1"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Monthly Expenses ($)</label>
+          <input
+            type="number"
+            value={expenses}
+            onChange={(e) => setExpenses(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="2000"
+            min="0"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Risk Level</label>
+          <select
+            value={riskLevel}
+            onChange={(e) => setRiskLevel(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="Bro Danger">Bro Danger</option>
+          </select>
+        </div>
+      </div>
+      
+      <div className="flex justify-center mb-8">
+        <button 
+          onClick={fetchAdvice}
+          disabled={loading || !income || !expenses}
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 shadow-md transition-colors duration-300 font-semibold text-lg"
+        >
+          {loading ? 'Generating Advice...' : 'Generate Financial Advice'}
+        </button>
+      </div>
+      
+      {error && (
+        <div className="p-4 mb-6 bg-red-100 text-red-700 rounded-lg">
+          {error}
+        </div>
+      )}
+      
+      {report && (
+        <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 shadow-md">
+          {/* Tab Navigation */}
+          <div className="flex border-b border-gray-200 mb-6">
+            <button
+              className={`py-3 px-6 font-medium ${activeTab === 'overview' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+              onClick={() => setActiveTab('overview')}
+            >
+              Overview
+            </button>
+            <button
+              className={`py-3 px-6 font-medium ${activeTab === 'investments' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+              onClick={() => setActiveTab('investments')}
+            >
+              Investments
+            </button>
+            <button
+              className={`py-3 px-6 font-medium ${activeTab === 'charts' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+              onClick={() => setActiveTab('charts')}
+            >
+              Charts
+            </button>
+          </div>
+          
+          {/* Overview Tab */}
+          {activeTab === 'overview' && (
+            <div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div className="bg-white p-5 rounded-lg shadow-sm">
+                  <h3 className="text-lg font-medium text-gray-700 mb-4">Monthly Income</h3>
+                  <p className="text-3xl font-bold text-green-600">${report.income.toLocaleString()}</p>
+                </div>
+                
+                <div className="bg-white p-5 rounded-lg shadow-sm">
+                  <h3 className="text-lg font-medium text-gray-700 mb-4">Monthly Expenses</h3>
+                  <p className="text-3xl font-bold text-red-600">${report.expenses.toLocaleString()}</p>
+                </div>
+                
+                <div className="bg-white p-5 rounded-lg shadow-sm">
+                  <h3 className="text-lg font-medium text-gray-700 mb-4">Monthly Savings</h3>
+                  <p className="text-3xl font-bold text-blue-600">
+                    ${report.savings.toLocaleString()} 
+                    <span className="text-lg ml-2">({report.savings_percent}%)</span>
+                  </p>
+                </div>
+              </div>
+              
+              <div className="mb-6">
+                <h2 className="text-xl font-bold text-blue-600 flex items-center mb-4">
+                  <span className="mr-2">📊</span> Budget Breakdown
+                </h2>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-white p-4 rounded-lg shadow-sm">
+                    <ul className="space-y-3">
+                      <li className="p-3 bg-blue-50 rounded flex justify-between">
+                        <span>Essential Expenses (50%)</span>
+                        <span className="font-semibold">${report.essential_expenses.toLocaleString()}</span>
+                      </li>
+                      <li className="p-3 bg-green-50 rounded flex justify-between">
+                        <span>Discretionary Spending (30%)</span>
+                        <span className="font-semibold">${report.discretionary_spending.toLocaleString()}</span>
+                      </li>
+                      <li className="p-3 bg-yellow-50 rounded flex justify-between">
+                        <span>Savings & Investments (20%)</span>
+                        <span className="font-semibold">${report.savings_investments.toLocaleString()}</span>
+                      </li>
+                    </ul>
+                  </div>
+                  
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={getBudgetPieData()}
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={80}
+                          dataKey="value"
+                          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        >
+                          {getBudgetPieData().map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <h2 className="text-xl font-bold text-blue-600 flex items-center mb-3">
+                  <span className="mr-2">💡</span> Pro Tip
+                </h2>
+                <div className="bg-white p-4 rounded-lg shadow-sm">
+                  <p>{report.pro_tip}</p>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Investments Tab */}
+          {activeTab === 'investments' && (
+            <div>
+              <div className="mb-6">
+                <h2 className="text-xl font-bold text-blue-600 flex items-center mb-4">
+                  <span className="mr-2">📈</span> Investment Advice 
+                  <span className={`ml-3 px-3 py-1 rounded-full text-white text-sm ${
+                    report.risk_level === 'Low' ? 'bg-green-500' : 
+                    report.risk_level === 'Medium' ? 'bg-blue-500' : 'bg-red-500'
+                  }`}>
+                    {report.risk_level}
+                  </span>
+                </h2>
+                
+                <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
+                  <p className="font-medium">Why this strategy?</p>
+                  <p className="mt-2">{report.investment_rationale}</p>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {report.investments.map((inv, idx) => (
+                    <div key={idx} className="bg-white p-4 rounded-lg shadow-sm border-t-4" style={{ borderColor: COLORS[idx % COLORS.length] }}>
+                      <h3 className="font-semibold text-lg mb-2">{inv.name}</h3>
+                      <div className="grid grid-cols-2 gap-4 mb-3">
+                        <div className="bg-gray-50 p-3 rounded">
+                          <p className="text-xs text-gray-500">Current Yield</p>
+                          <p className="text-xl font-bold text-green-600">{inv.current_yield}%</p>
+                        </div>
+                        <div className="bg-gray-50 p-3 rounded">
+                          <p className="text-xs text-gray-500">Risk Score</p>
+                          <p className="text-xl font-bold" style={{ color: 
+                            inv.risk_score < 3 ? '#4CAF50' : 
+                            inv.risk_score < 7 ? '#2196F3' : '#F44336'
+                          }}>
+                            {inv.risk_score}/10
+                          </p>
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-600">{inv.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Charts Tab */}
+          {activeTab === 'charts' && (
+            <div>
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold mb-4">Investment Risk Comparison</h3>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={getRiskScoreData()}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis domain={[0, 10]} />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="score" name="Risk Score" fill="#8884d8" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+              
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold mb-4">Investment Yield Comparison</h3>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={getYieldComparisonData()}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip formatter={(value) => `${value}%`} />
+                      <Legend />
+                      <Bar dataKey="yield" name="Current Yield %" fill="#82ca9d" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+              
+              {report && report.investments && report.investments.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">6-Month Yield Trend: {report.investments[0].name}</h3>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={getTrendData(0)}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" />
+                        <YAxis />
+                        <Tooltip formatter={(value) => `${value}%`} />
+                        <Bar dataKey="yield" name="Yield %" fill={COLORS[0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+      
+      {!report && !loading && income === '' && expenses === '' && (
+        <div className="text-center p-12 bg-gray-50 rounded-lg border border-gray-200">
+          <h3 className="text-xl font-semibold text-gray-700 mb-3">Welcome to AI Finance Copilot</h3>
+          <p className="text-gray-600">
+            Enter your financial information above to get personalized advice with detailed charts and insights
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default FinanceCopilot;

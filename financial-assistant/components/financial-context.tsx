@@ -2,7 +2,6 @@
 
 import type React from "react"
 import { createContext, useContext, useState, useEffect } from "react"
-import { useAuth } from "./auth-context"
 
 type Currency = "USD" | "EUR" | "GBP" | "JPY" | "CAD"
 
@@ -34,220 +33,138 @@ type FinancialContextType = {
 
   // Methods to update data
   setCurrency: (currency: Currency) => void
-  addTransaction: (transaction: Omit<Transaction, "id">) => Promise<void>
-  updateFinancialSummary: (income?: number, expenses?: number) => Promise<void>
-  addSavingsGoal: (goal: Omit<SavingsGoal, "id" | "current">) => Promise<void>
-  contributeToGoal: (goalId: string, amount: number) => Promise<void>
+  addTransaction: (transaction: Omit<Transaction, "id">) => void
+  addIncome: (amount: number) => void
+  addExpense: (amount: number, category: string) => void
+  updateSavingsGoal: (goalId: string, amount: number) => void
+  addSavingsGoal: (goal: Omit<SavingsGoal, "id">) => void
 
   // Currency formatting
   formatCurrency: (amount: number) => string
 
   // Data loading state
   isLoading: boolean
-  refreshData: () => Promise<void>
 }
+
+const defaultSavingsGoals: SavingsGoal[] = []
 
 const FinancialContext = createContext<FinancialContextType | undefined>(undefined)
 
 export function FinancialProvider({ children }: { children: React.ReactNode }) {
-  const { user, isLoading: authLoading } = useAuth()
-
   const [income, setIncome] = useState(0)
   const [expenses, setExpenses] = useState(0)
   const [balance, setBalance] = useState(0)
   const [savingsRate, setSavingsRate] = useState(0)
   const [currency, setCurrency] = useState<Currency>("USD")
   const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>([])
+  const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>(defaultSavingsGoals)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Load financial data when user changes
+  // Load saved financial data on mount
   useEffect(() => {
-    if (!authLoading && user) {
-      refreshData()
-      // Set currency from user preferences
-      if (user.currency) {
-        setCurrency(user.currency as Currency)
-      }
-    } else if (!authLoading && !user) {
-      // Reset data when user logs out
-      setIncome(0)
-      setExpenses(0)
-      setBalance(0)
-      setSavingsRate(0)
-      setTransactions([])
-      setSavingsGoals([])
-      setIsLoading(false)
-    }
-  }, [user, authLoading])
-
-  // Refresh all financial data
-  const refreshData = async () => {
-    if (!user) return
-
-    setIsLoading(true)
-    try {
-      // Load financial summary
-      const summaryResponse = await fetch("/api/summary")
-      if (summaryResponse.ok) {
-        const { summary } = await summaryResponse.json()
-        setIncome(summary.income)
-        setExpenses(summary.expenses)
-        setBalance(summary.balance)
-        setSavingsRate(summary.savingsRate)
-      }
-
-      // Load transactions
-      const transactionsResponse = await fetch("/api/transactions")
-      if (transactionsResponse.ok) {
-        const { transactions } = await transactionsResponse.json()
-        setTransactions(transactions)
-      }
-
-      // Load savings goals
-      const goalsResponse = await fetch("/api/goals")
-      if (goalsResponse.ok) {
-        const { goals } = await goalsResponse.json()
-        setSavingsGoals(goals)
-      }
-    } catch (error) {
-      console.error("Error loading financial data:", error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  // Update currency (also updates in user profile)
-  const updateCurrency = async (newCurrency: Currency) => {
-    setCurrency(newCurrency)
-
-    if (user) {
+    const loadFinancialData = () => {
       try {
-        await fetch("/api/profile", {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ currency: newCurrency }),
-        })
+        const savedIncome = localStorage.getItem("moneyminder_income")
+        const savedExpenses = localStorage.getItem("moneyminder_expenses")
+        const savedCurrency = localStorage.getItem("moneyminder_currency")
+        const savedTransactions = localStorage.getItem("moneyminder_transactions")
+        const savedSavingsGoals = localStorage.getItem("moneyminder_savings_goals")
+
+        if (savedIncome) setIncome(Number.parseFloat(savedIncome))
+        if (savedExpenses) setExpenses(Number.parseFloat(savedExpenses))
+        if (savedCurrency) setCurrency(savedCurrency as Currency)
+        if (savedTransactions) setTransactions(JSON.parse(savedTransactions))
+        if (savedSavingsGoals) setSavingsGoals(JSON.parse(savedSavingsGoals))
+
+        // Calculate balance and savings rate
+        const loadedIncome = savedIncome ? Number.parseFloat(savedIncome) : 0
+        const loadedExpenses = savedExpenses ? Number.parseFloat(savedExpenses) : 0
+        setBalance(loadedIncome - loadedExpenses)
+
+        if (loadedIncome > 0) {
+          setSavingsRate(((loadedIncome - loadedExpenses) / loadedIncome) * 100)
+        }
       } catch (error) {
-        console.error("Error updating currency:", error)
+        console.error("Error loading financial data:", error)
+      } finally {
+        setIsLoading(false)
       }
     }
-  }
+
+    loadFinancialData()
+  }, [])
+
+  // Save financial data when it changes
+  useEffect(() => {
+    if (!isLoading) {
+      localStorage.setItem("moneyminder_income", income.toString())
+      localStorage.setItem("moneyminder_expenses", expenses.toString())
+      localStorage.setItem("moneyminder_currency", currency)
+      localStorage.setItem("moneyminder_transactions", JSON.stringify(transactions))
+      localStorage.setItem("moneyminder_savings_goals", JSON.stringify(savingsGoals))
+    }
+  }, [income, expenses, currency, transactions, savingsGoals, isLoading])
 
   // Add a new transaction
-  const addTransaction = async (transaction: Omit<Transaction, "id">) => {
-    if (!user) return
+  const addTransaction = (transaction: Omit<Transaction, "id">) => {
+    const newTransaction = {
+      ...transaction,
+      id: `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    }
 
-    try {
-      const response = await fetch("/api/transactions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(transaction),
-      })
+    setTransactions((prev) => [newTransaction, ...prev])
 
-      if (!response.ok) {
-        throw new Error("Failed to add transaction")
-      }
-
-      // Refresh data to get updated transactions and summary
-      await refreshData()
-    } catch (error) {
-      console.error("Error adding transaction:", error)
-      throw error
+    // Update income or expenses based on transaction amount
+    if (transaction.amount > 0) {
+      addIncome(transaction.amount)
+    } else {
+      addExpense(Math.abs(transaction.amount), transaction.category)
     }
   }
 
-  // Update financial summary
-  const updateFinancialSummary = async (newIncome?: number, newExpenses?: number) => {
-    if (!user) return
+  // Add income
+  const addIncome = (amount: number) => {
+    setIncome((prev) => {
+      const newIncome = prev + amount
+      // Recalculate savings rate
+      const newSavingsRate = newIncome > 0 ? ((newIncome - expenses) / newIncome) * 100 : 0
+      setSavingsRate(newSavingsRate)
+      // Update balance
+      setBalance(newIncome - expenses)
+      return newIncome
+    })
+  }
 
-    try {
-      const response = await fetch("/api/summary", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          income: newIncome,
-          expenses: newExpenses,
-        }),
-      })
+  // Add expense
+  const addExpense = (amount: number, category: string) => {
+    setExpenses((prev) => {
+      const newExpenses = prev + amount
+      // Recalculate savings rate
+      const newSavingsRate = income > 0 ? ((income - newExpenses) / income) * 100 : 0
+      setSavingsRate(newSavingsRate)
+      // Update balance
+      setBalance(income - newExpenses)
+      return newExpenses
+    })
+  }
 
-      if (!response.ok) {
-        throw new Error("Failed to update financial summary")
-      }
-
-      const { summary } = await response.json()
-      setIncome(summary.income)
-      setExpenses(summary.expenses)
-      setBalance(summary.balance)
-      setSavingsRate(summary.savingsRate)
-    } catch (error) {
-      console.error("Error updating financial summary:", error)
-      throw error
-    }
+  // Update a savings goal
+  const updateSavingsGoal = (goalId: string, amount: number) => {
+    setSavingsGoals((prev) =>
+      prev.map((goal) =>
+        goal.id === goalId ? { ...goal, current: Math.min(goal.current + amount, goal.target) } : goal,
+      ),
+    )
   }
 
   // Add a new savings goal
-  const addSavingsGoal = async (goal: Omit<SavingsGoal, "id" | "current">) => {
-    if (!user) return
-
-    try {
-      const response = await fetch("/api/goals", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(goal),
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to add savings goal")
-      }
-
-      // Refresh goals
-      const goalsResponse = await fetch("/api/goals")
-      if (goalsResponse.ok) {
-        const { goals } = await goalsResponse.json()
-        setSavingsGoals(goals)
-      }
-    } catch (error) {
-      console.error("Error adding savings goal:", error)
-      throw error
+  const addSavingsGoal = (goal: Omit<SavingsGoal, "id">) => {
+    const newGoal = {
+      ...goal,
+      id: `goal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     }
-  }
 
-  // Contribute to a savings goal
-  const contributeToGoal = async (goalId: string, amount: number) => {
-    if (!user) return
-
-    try {
-      const response = await fetch(`/api/goals/${goalId}/contribute`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ amount }),
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to contribute to savings goal")
-      }
-
-      // Refresh goals
-      const goalsResponse = await fetch("/api/goals")
-      if (goalsResponse.ok) {
-        const { goals } = await goalsResponse.json()
-        setSavingsGoals(goals)
-      }
-    } catch (error) {
-      console.error("Error contributing to goal:", error)
-      throw error
-    }
+    setSavingsGoals((prev) => [...prev, newGoal])
   }
 
   // Format currency based on selected currency
@@ -270,14 +187,14 @@ export function FinancialProvider({ children }: { children: React.ReactNode }) {
         currency,
         transactions,
         savingsGoals,
-        setCurrency: updateCurrency,
+        setCurrency,
         addTransaction,
-        updateFinancialSummary,
+        addIncome,
+        addExpense,
+        updateSavingsGoal,
         addSavingsGoal,
-        contributeToGoal,
         formatCurrency,
         isLoading,
-        refreshData,
       }}
     >
       {children}

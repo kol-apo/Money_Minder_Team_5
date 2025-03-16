@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
-import { useFinancial } from "@/contexts/financial-context"
+import { useFinancial } from "@/components/financial-context"
 import { useState } from "react"
 import {
   Dialog,
@@ -108,7 +108,25 @@ export function SavingsGoals() {
 
       {savingsGoals.length === 0 ? (
         <div className="text-center py-8">
-          <p className="text-muted-foreground">No savings goals yet. Add your first goal to get started.</p>
+          <div className="inline-flex items-center justify-center rounded-full bg-muted p-3 mb-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-muted-foreground"
+            >
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+              <line x1="7" y1="7" x2="7.01" y2="7" />
+            </svg>
+          </div>
+          <h3 className="font-medium mb-1">No savings goals yet</h3>
+          <p className="text-muted-foreground">Create your first goal to start tracking your progress.</p>
         </div>
       ) : (
         <div className="grid gap-4">
