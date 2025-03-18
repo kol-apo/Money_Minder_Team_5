@@ -49,8 +49,8 @@ export default function SpendingPage() {
                   <CardTitle className="text-sm font-medium">Total Spending</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">$2,850.00</div>
-                  <p className="text-xs text-muted-foreground">-3.2% from last month</p>
+                  <div className="text-2xl font-bold">$0.00</div>
+                  <p className="text-xs text-muted-foreground">No previous data for comparison</p>
                 </CardContent>
               </Card>
               <Card>
@@ -58,8 +58,8 @@ export default function SpendingPage() {
                   <CardTitle className="text-sm font-medium">Largest Expense</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">$1,200.00</div>
-                  <p className="text-xs text-muted-foreground">Housing</p>
+                  <div className="text-2xl font-bold">$0.00</div>
+                  <p className="text-xs text-muted-foreground">No expense data yet</p>
                 </CardContent>
               </Card>
               <Card>
@@ -67,8 +67,8 @@ export default function SpendingPage() {
                   <CardTitle className="text-sm font-medium">Daily Average</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">$95.00</div>
-                  <p className="text-xs text-muted-foreground">+2.1% from last month</p>
+                  <div className="text-2xl font-bold">$0.00</div>
+                  <p className="text-xs text-muted-foreground">No previous data for comparison</p>
                 </CardContent>
               </Card>
               <Card>
@@ -76,8 +76,8 @@ export default function SpendingPage() {
                   <CardTitle className="text-sm font-medium">Budget Status</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-green-600">Under Budget</div>
-                  <p className="text-xs text-muted-foreground">$150 remaining</p>
+                  <div className="text-2xl font-bold text-muted-foreground">No Budget Set</div>
+                  <p className="text-xs text-muted-foreground">Set up a budget to track status</p>
                 </CardContent>
               </Card>
             </div>

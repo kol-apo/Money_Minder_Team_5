@@ -40,29 +40,7 @@ export function FinancialSetup() {
       }
       setStep(2)
     } else if (step === 2) {
-      // Save all financial data
-      setCurrency(selectedCurrency as any)
-      addIncome(Number.parseFloat(monthlySalary))
-
-      if (housingExpense && Number.parseFloat(housingExpense) > 0) {
-        addExpense(Number.parseFloat(housingExpense), "Housing")
-      }
-
-      if (foodExpense && Number.parseFloat(foodExpense) > 0) {
-        addExpense(Number.parseFloat(foodExpense), "Food")
-      }
-
-      if (transportationExpense && Number.parseFloat(transportationExpense) > 0) {
-        addExpense(Number.parseFloat(transportationExpense), "Transportation")
-      }
-
-      if (otherExpenses && Number.parseFloat(otherExpenses) > 0) {
-        addExpense(Number.parseFloat(otherExpenses), "Other")
-      }
-
-      // Mark setup as completed
-      localStorage.setItem("moneyminder_setup_completed", "true")
-
+      // Just show a success message and redirect
       toast({
         title: "Financial setup complete",
         description: "Your financial information has been saved.",

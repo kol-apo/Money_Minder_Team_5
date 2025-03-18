@@ -2,53 +2,53 @@
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Progress } from "@/components/ui/progress"
-
-const categories = [
-  {
-    id: "1",
-    name: "Housing",
-    amount: 1200,
-    percentage: 42.1,
-    change: -2.5,
-  },
-  {
-    id: "2",
-    name: "Food",
-    amount: 500,
-    percentage: 17.5,
-    change: 5.2,
-  },
-  {
-    id: "3",
-    name: "Transportation",
-    amount: 350,
-    percentage: 12.3,
-    change: -1.8,
-  },
-  {
-    id: "4",
-    name: "Utilities",
-    amount: 280,
-    percentage: 9.8,
-    change: 0,
-  },
-  {
-    id: "5",
-    name: "Entertainment",
-    amount: 220,
-    percentage: 7.7,
-    change: 12.5,
-  },
-  {
-    id: "6",
-    name: "Other",
-    amount: 300,
-    percentage: 10.5,
-    change: -4.2,
-  },
-]
+import { useFinancial } from "@/components/financial-context"
+import { useMemo } from "react"
 
 export function SpendingBreakdown() {
+  const { transactions, formatCurrency } = useFinancial()
+
+  // Calculate spending by category
+  const categoryData = useMemo(() => {
+    const categories: Record<string, number> = {}
+    let totalSpending = 0
+
+    // Only include expense transactions (negative amounts)
+    transactions
+      .filter((tx) => tx.amount < 0)
+      .forEach((tx) => {
+        const category = tx.category
+        const amount = Math.abs(tx.amount)
+        totalSpending += amount
+
+        if (categories[category]) {
+          categories[category] += amount
+        } else {
+          categories[category] = amount
+        }
+      })
+
+    // Convert to array format with percentages
+    return Object.entries(categories).map(([name, value]) => ({
+      id: name.toLowerCase().replace(/\s+/g, "-"),
+      name,
+      amount: value,
+      percentage: totalSpending > 0 ? (value / totalSpending) * 100 : 0,
+      change: 0, // No previous data to compare
+    }))
+  }, [transactions])
+
+  // If no expense data, show a message
+  if (categoryData.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-muted-foreground">
+          No spending data available yet. Add transactions to see your spending breakdown.
+        </p>
+      </div>
+    )
+  }
+
   return (
     <Table>
       <TableHeader>
@@ -60,7 +60,7 @@ export function SpendingBreakdown() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {categories.map((category) => (
+        {categoryData.map((category) => (
           <TableRow key={category.id}>
             <TableCell className="font-medium">
               <div className="space-y-1">
@@ -68,8 +68,8 @@ export function SpendingBreakdown() {
                 <Progress value={category.percentage} className="h-1" />
               </div>
             </TableCell>
-            <TableCell>${category.amount.toLocaleString()}</TableCell>
-            <TableCell>{category.percentage}%</TableCell>
+            <TableCell>{formatCurrency(category.amount)}</TableCell>
+            <TableCell>{category.percentage.toFixed(1)}%</TableCell>
             <TableCell className={category.change > 0 ? "text-red-500" : category.change < 0 ? "text-green-500" : ""}>
               {category.change > 0 ? "+" : ""}
               {category.change}%

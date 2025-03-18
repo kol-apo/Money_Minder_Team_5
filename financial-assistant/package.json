@@ -1,5 +1,5 @@
 {
-  "name": "money-minder",
+  "name": "my-v0-project",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -58,9 +58,18 @@
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.6",
     "zod": "latest",
-    "ai": "latest",
-    "@ai-sdk/openai": "latest",
-    "react-responsive": "latest"
+    "jsdom": "latest",
+    "happy-dom": "latest",
+    "@vitest/ui": "latest",
+    "@types/debug": "latest",
+    "@vitest/browser": "latest",
+    "@edge-runtime/vm": "latest",
+    "@testing-library/dom": "latest",
+    "react-responsive": "latest",
+    "@testing-library/jest-dom": "latest",
+    "vitest": "latest",
+    "@testing-library/react": "latest",
+    "@testing-library/user-event": "latest"
   },
   "devDependencies": {
     "@types/node": "^22",

@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { createContext, useContext, useState, useEffect } from "react"
+import { createContext, useContext, useState } from "react"
 
 type Currency = "USD" | "EUR" | "GBP" | "JPY" | "CAD"
 
@@ -46,7 +46,29 @@ type FinancialContextType = {
   isLoading: boolean
 }
 
-const defaultSavingsGoals: SavingsGoal[] = []
+const defaultSavingsGoals = [
+  {
+    id: "1",
+    name: "Emergency Fund",
+    target: 10000,
+    current: 0,
+    deadline: "2023-12-31",
+  },
+  {
+    id: "2",
+    name: "Vacation",
+    target: 3000,
+    current: 0,
+    deadline: "2023-08-15",
+  },
+  {
+    id: "3",
+    name: "New Car",
+    target: 20000,
+    current: 0,
+    deadline: "2024-06-30",
+  },
+]
 
 const FinancialContext = createContext<FinancialContextType | undefined>(undefined)
 
@@ -58,52 +80,7 @@ export function FinancialProvider({ children }: { children: React.ReactNode }) {
   const [currency, setCurrency] = useState<Currency>("USD")
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>(defaultSavingsGoals)
-  const [isLoading, setIsLoading] = useState(true)
-
-  // Load saved financial data on mount
-  useEffect(() => {
-    const loadFinancialData = () => {
-      try {
-        const savedIncome = localStorage.getItem("moneyminder_income")
-        const savedExpenses = localStorage.getItem("moneyminder_expenses")
-        const savedCurrency = localStorage.getItem("moneyminder_currency")
-        const savedTransactions = localStorage.getItem("moneyminder_transactions")
-        const savedSavingsGoals = localStorage.getItem("moneyminder_savings_goals")
-
-        if (savedIncome) setIncome(Number.parseFloat(savedIncome))
-        if (savedExpenses) setExpenses(Number.parseFloat(savedExpenses))
-        if (savedCurrency) setCurrency(savedCurrency as Currency)
-        if (savedTransactions) setTransactions(JSON.parse(savedTransactions))
-        if (savedSavingsGoals) setSavingsGoals(JSON.parse(savedSavingsGoals))
-
-        // Calculate balance and savings rate
-        const loadedIncome = savedIncome ? Number.parseFloat(savedIncome) : 0
-        const loadedExpenses = savedExpenses ? Number.parseFloat(savedExpenses) : 0
-        setBalance(loadedIncome - loadedExpenses)
-
-        if (loadedIncome > 0) {
-          setSavingsRate(((loadedIncome - loadedExpenses) / loadedIncome) * 100)
-        }
-      } catch (error) {
-        console.error("Error loading financial data:", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    loadFinancialData()
-  }, [])
-
-  // Save financial data when it changes
-  useEffect(() => {
-    if (!isLoading) {
-      localStorage.setItem("moneyminder_income", income.toString())
-      localStorage.setItem("moneyminder_expenses", expenses.toString())
-      localStorage.setItem("moneyminder_currency", currency)
-      localStorage.setItem("moneyminder_transactions", JSON.stringify(transactions))
-      localStorage.setItem("moneyminder_savings_goals", JSON.stringify(savingsGoals))
-    }
-  }, [income, expenses, currency, transactions, savingsGoals, isLoading])
+  const [isLoading, setIsLoading] = useState(false)
 
   // Add a new transaction
   const addTransaction = (transaction: Omit<Transaction, "id">) => {
