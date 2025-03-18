@@ -37,27 +37,8 @@ export function SpendingByCategory() {
   // If no expense data, show a message
   if (categoryData.length === 0) {
     return (
-      <div className="h-[300px] w-full flex flex-col items-center justify-center">
-        <div className="rounded-full bg-muted p-3 mb-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="text-muted-foreground"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="8" x2="12" y2="12" />
-            <line x1="12" y1="16" x2="12.01" y2="16" />
-          </svg>
-        </div>
+      <div className="h-[300px] w-full flex items-center justify-center">
         <p className="text-muted-foreground">No expense data available yet.</p>
-        <p className="text-sm text-muted-foreground mt-1">Add expense transactions to see your spending breakdown</p>
       </div>
     )
   }

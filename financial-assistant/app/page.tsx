@@ -35,25 +35,17 @@ export default function Home() {
                   </p>
                 </div>
 
-                {/* Features Preview */}
-                <div className="grid grid-cols-3 gap-4 p-6 rounded-xl bg-white/5 backdrop-blur-sm border border-border/50 shadow-sm">
-                  <div className="text-center">
-                    <p className="text-sm text-muted-foreground">Track</p>
-                    <p className="text-2xl font-bold text-primary">Expenses</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-sm text-muted-foreground">Set</p>
-                    <p className="text-2xl font-bold text-primary">Goals</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-sm text-muted-foreground">Get</p>
-                    <p className="text-2xl font-bold text-primary">Insights</p>
-                  </div>
+                {/* Finance Quote */}
+                <div className="p-6 rounded-xl bg-white/5 backdrop-blur-sm border border-border/50 shadow-sm">
+                  <blockquote className="italic text-muted-foreground">
+                    "The stock market is a device for transferring money from the impatient to the patient."
+                  </blockquote>
+                  <p className="mt-2 text-sm text-right">— Warren Buffett</p>
                 </div>
 
                 {/* CTA Buttons */}
                 <div className="flex flex-col gap-3 sm:flex-row">
-                  <Link href="/dashboard">
+                  <Link href="/setup">
                     <Button size="lg" className="w-full sm:w-auto gap-2 text-base">
                       Get Started <ArrowRight className="h-4 w-4" />
                     </Button>
@@ -84,15 +76,15 @@ export default function Home() {
                         <Wallet className="h-5 w-5 text-primary" />
                         <span className="font-medium">Balance</span>
                       </div>
-                      <p className="text-xl font-bold mt-1 text-primary">$0.00</p>
+                      <p className="text-xl font-bold mt-1 text-primary">$0</p>
                     </div>
 
                     <div className="absolute -bottom-10 -right-10 p-4 bg-white/10 dark:bg-black/10 backdrop-blur-xl rounded-lg shadow-lg border border-white/20 dark:border-white/5 transform rotate-[6deg]">
                       <div className="flex items-center gap-2">
                         <TrendingUp className="h-5 w-5 text-primary" />
-                        <span className="font-medium">Savings</span>
+                        <span className="font-medium">Start Saving</span>
                       </div>
-                      <p className="text-xl font-bold mt-1 text-primary">0.0%</p>
+                      <p className="text-xl font-bold mt-1 text-primary">Today</p>
                     </div>
                   </div>
                 </div>
@@ -194,9 +186,9 @@ export default function Home() {
                 <div className="mb-4 h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
                   <Wallet className="h-8 w-8 text-primary" />
                 </div>
-                <h3 className="mb-2 text-xl font-bold">Connect Your Accounts</h3>
+                <h3 className="mb-2 text-xl font-bold">Set Up Your Profile</h3>
                 <p className="text-muted-foreground">
-                  Securely link your bank accounts and credit cards to automatically import transactions.
+                  Enter your income and expenses to create a personalized financial profile.
                 </p>
               </div>
 
@@ -208,9 +200,9 @@ export default function Home() {
                 <div className="mb-4 h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
                   <BarChart2 className="h-8 w-8 text-primary" />
                 </div>
-                <h3 className="mb-2 text-xl font-bold">Analyze Your Spending</h3>
+                <h3 className="mb-2 text-xl font-bold">Track Your Spending</h3>
                 <p className="text-muted-foreground">
-                  Get insights into your spending habits with automatic categorization and visual reports.
+                  Add transactions and see your spending patterns with automatic categorization.
                 </p>
               </div>
 
@@ -231,7 +223,7 @@ export default function Home() {
 
             {/* CTA */}
             <div className="flex justify-center mt-12">
-              <Link href="/dashboard">
+              <Link href="/setup">
                 <Button size="lg" className="gap-2 text-base">
                   Start Your Financial Journey <ArrowRight className="h-4 w-4" />
                 </Button>
@@ -240,7 +232,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Testimonial Section */}
+        {/* Testimonial Section with real finance quote */}
         <section className="w-full py-16 md:py-24 bg-background">
           <div className="container px-4 md:px-6">
             <div className="mx-auto max-w-3xl">
@@ -264,12 +256,11 @@ export default function Home() {
                     </svg>
                   </div>
                   <p className="text-xl md:text-2xl font-medium leading-relaxed">
-                    MoneyMinder has completely transformed how I manage my finances. The financial assistant helped me
-                    save an extra $450 per month!
+                    "Do not save what is left after spending, but spend what is left after saving."
                   </p>
                   <div className="mt-4">
-                    <h4 className="font-semibold">Sarah Johnson</h4>
-                    <p className="text-sm text-muted-foreground">Marketing Director • Using MoneyMinder for 8 months</p>
+                    <h4 className="font-semibold">Warren Buffett</h4>
+                    <p className="text-sm text-muted-foreground">Investor & Business Tycoon</p>
                   </div>
                 </div>
               </div>

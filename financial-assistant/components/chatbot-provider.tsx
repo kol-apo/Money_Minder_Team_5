@@ -5,16 +5,64 @@ import { MessageSquare, X, Send, Maximize2, Minimize2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { useChat } from "ai/react"
 import { cn } from "@/lib/utils"
+
+// Define a simple chat hook to replace the ai/react useChat
+function useSimpleChat() {
+  const [messages, setMessages] = useState([])
+  const [input, setInput] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleInputChange = (e) => {
+    setInput(e.target.value)
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!input.trim() || isLoading) return
+
+    // Add user message
+    const userMessage = {
+      id: `user-${Date.now()}`,
+      role: "user",
+      content: input,
+    }
+    setMessages((prev) => [...prev, userMessage])
+    setInput("")
+    setIsLoading(true)
+
+    // Simulate API delay
+    setTimeout(() => {
+      // Add bot response
+      const responses = [
+        "Based on your spending habits, I recommend creating a budget that allocates 50% for needs, 30% for wants, and 20% for savings and debt repayment.",
+        "For retirement planning, aim to save at least 15% of your pre-tax income annually. Starting early is key to building a substantial nest egg.",
+        "An emergency fund should cover 3-6 months of essential expenses. Keep this money in a high-yield savings account for easy access.",
+        "When investing, diversification is important. Consider a mix of stocks, bonds, and other assets based on your risk tolerance and time horizon.",
+        "To reduce monthly expenses, review subscription services you rarely use, refinance high-interest loans, and consider meal planning to reduce food costs.",
+        "The 50/30/20 budget rule is a simple framework: 50% of income for necessities, 30% for discretionary spending, and 20% for financial goals.",
+      ]
+
+      const randomResponse = responses[Math.floor(Math.random() * responses.length)]
+
+      const botMessage = {
+        id: `bot-${Date.now()}`,
+        role: "assistant",
+        content: randomResponse,
+      }
+      setMessages((prev) => [...prev, botMessage])
+      setIsLoading(false)
+    }, 1000)
+  }
+
+  return { messages, input, handleInputChange, handleSubmit, isLoading }
+}
 
 export function ChatbotProvider() {
   const [isOpen, setIsOpen] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
-    api: "/api/chat",
-  })
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = useSimpleChat()
 
   const toggleChat = () => setIsOpen(!isOpen)
   const toggleExpand = () => setIsExpanded(!isExpanded)

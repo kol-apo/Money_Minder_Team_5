@@ -11,23 +11,8 @@ export default function SetupPage() {
 
   // If user already has financial data, redirect to dashboard
   useEffect(() => {
-    // Check if the user has completed setup before
-    const hasCompletedSetup = localStorage.getItem("moneyminder_setup_completed")
-    if (!isLoading && hasCompletedSetup === "true") {
-      router.push("/dashboard")
-    }
-  }, [isLoading, router])
-
-  if (isLoading) {
-    return (
-      <div className="container flex items-center justify-center min-h-[80vh]">
-        <div className="text-center">
-          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p>Loading...</p>
-        </div>
-      </div>
-    )
-  }
+    // No redirection needed, we'll always show the setup page
+  }, [])
 
   return (
     <div className="container flex items-center justify-center min-h-[80vh] py-8">

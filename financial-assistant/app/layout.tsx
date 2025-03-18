@@ -6,7 +6,6 @@ import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { ChatbotProvider } from "@/components/chatbot-provider"
 import { FinancialProvider } from "@/components/financial-context"
-import { WelcomeModal } from "@/components/welcome-modal"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -25,7 +24,6 @@ export default function RootLayout({
               <div className="flex-1">{children}</div>
               <SiteFooter />
               <ChatbotProvider />
-              <WelcomeModal />
             </div>
           </FinancialProvider>
         </ThemeProvider>

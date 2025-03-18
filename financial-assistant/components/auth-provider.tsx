@@ -27,10 +27,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Check if user is logged in on mount
   useEffect(() => {
-    const storedUser = localStorage.getItem("moneyminder_user")
-    if (storedUser) {
-      setUser(JSON.parse(storedUser))
-    }
+    // Initialize with a demo user for frontend-only functionality
+    setUser({
+      id: "user_123",
+      name: "Demo User",
+      email: "demo@example.com",
+      avatar: "/placeholder.svg?height=40&width=40",
+    })
     setIsLoading(false)
   }, [])
 
@@ -41,7 +44,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      // Mock user data - in a real app, this would come from your backend
+      // Mock user data
       const userData: User = {
         id: "user_123",
         name: "Demo User",
@@ -50,7 +53,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       setUser(userData)
-      localStorage.setItem("moneyminder_user", JSON.stringify(userData))
     } catch (error) {
       console.error("Login failed:", error)
       throw error
@@ -75,7 +77,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       setUser(userData)
-      localStorage.setItem("moneyminder_user", JSON.stringify(userData))
     } catch (error) {
       console.error("Registration failed:", error)
       throw error
@@ -87,7 +88,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Logout function
   const logout = () => {
     setUser(null)
-    localStorage.removeItem("moneyminder_user")
   }
 
   return <AuthContext.Provider value={{ user, isLoading, login, register, logout }}>{children}</AuthContext.Provider>

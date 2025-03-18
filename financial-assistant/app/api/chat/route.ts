@@ -1,19 +1,37 @@
-import { openai } from "@ai-sdk/openai"
-import { streamText } from "ai"
-
-// Allow streaming responses up to 30 seconds
-export const maxDuration = 30
+// Replace the entire file with a simpler implementation that doesn't use OpenAI
 
 export async function POST(req: Request) {
   const { messages } = await req.json()
 
-  const result = streamText({
-    model: openai("gpt-4o"),
-    system:
-      "You are a helpful logic-based financial assistant for MoneyMinder. Provide concise, practical financial advice and insights based on the user's questions. Focus on budgeting, saving, investing, and general financial wellness. Be friendly but professional, and offer actionable tips when possible. You are not AI-powered but rather use logical financial principles and rules to provide guidance.",
-    messages,
-  })
+  // Get the last user message
+  const lastUserMessage = messages.filter((m) => m.role === "user").pop()
 
-  return result.toDataStreamResponse()
+  // Static responses based on common financial questions
+  const responses = [
+    "Based on your spending habits, I recommend creating a budget that allocates 50% for needs, 30% for wants, and 20% for savings and debt repayment.",
+    "For retirement planning, aim to save at least 15% of your pre-tax income annually. Starting early is key to building a substantial nest egg.",
+    "An emergency fund should cover 3-6 months of essential expenses. Keep this money in a high-yield savings account for easy access.",
+    "When investing, diversification is important. Consider a mix of stocks, bonds, and other assets based on your risk tolerance and time horizon.",
+    "To reduce monthly expenses, review subscription services you rarely use, refinance high-interest loans, and consider meal planning to reduce food costs.",
+    "The 50/30/20 budget rule is a simple framework: 50% of income for necessities, 30% for discretionary spending, and 20% for financial goals.",
+  ]
+
+  // Select a random response
+  const randomResponse = responses[Math.floor(Math.random() * responses.length)]
+
+  // Create a response that mimics the structure expected by the client
+  return new Response(
+    JSON.stringify({
+      role: "assistant",
+      content: randomResponse,
+      id: `resp-${Date.now()}`,
+      createdAt: new Date(),
+    }),
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  )
 }
 
