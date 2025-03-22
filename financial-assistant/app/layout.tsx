@@ -6,6 +6,8 @@ import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { ChatbotProvider } from "@/components/chatbot-provider"
 import { FinancialProvider } from "@/components/financial-context"
+import { AuthProvider } from "@/components/auth-provider"
+import { UserProvider } from "@/components/user-context"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -18,24 +20,21 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-          <FinancialProvider>
-            <div className="relative flex min-h-screen flex-col">
-              <SiteHeader />
-              <div className="flex-1">{children}</div>
-              <SiteFooter />
-              <ChatbotProvider />
-            </div>
-          </FinancialProvider>
+          <AuthProvider>
+            <UserProvider>
+              <FinancialProvider>
+                <div className="relative flex min-h-screen flex-col">
+                  <SiteHeader />
+                  <div className="flex-1">{children}</div>
+                  <SiteFooter />
+                  <ChatbotProvider />
+                </div>
+              </FinancialProvider>
+            </UserProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
   )
 }
 
-
-
-import './globals.css'
-
-export const metadata = {
-      generator: 'v0.dev'
-    };

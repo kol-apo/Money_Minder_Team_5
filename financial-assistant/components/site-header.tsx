@@ -2,17 +2,19 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, BarChart2, MessageSquare, FileText, User, Menu, X, Wallet } from "lucide-react"
+import { Home, BarChart2, MessageSquare, FileText, User, Menu, X, Wallet, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { useMobile } from "@/hooks/use-mobile"
+import { useAuth } from "@/components/auth-provider"
 
 export function SiteHeader() {
   const pathname = usePathname()
   const isMobile = useMobile()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { user, logout } = useAuth()
 
   const routes = [
     {
@@ -81,6 +83,17 @@ export function SiteHeader() {
                 {route.label}
               </Link>
             ))}
+            {user && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={logout}
+                className="flex items-center gap-2 text-sm font-medium transition-colors hover:text-destructive"
+              >
+                <LogOut className="h-4 w-4" />
+                Logout
+              </Button>
+            )}
             <ThemeToggle />
           </nav>
         )}
@@ -104,6 +117,20 @@ export function SiteHeader() {
                 {route.label}
               </Link>
             ))}
+            {user && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setIsMenuOpen(false)
+                  logout()
+                }}
+                className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-destructive/10 hover:text-destructive"
+              >
+                <LogOut className="h-4 w-4" />
+                Logout
+              </Button>
+            )}
           </nav>
         </div>
       )}

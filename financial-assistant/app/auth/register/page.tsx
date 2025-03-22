@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Wallet } from "lucide-react"
@@ -21,6 +21,20 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
 
+  // Add this near the top of the component, after the useState declarations
+  const [redirectPath, setRedirectPath] = useState("/setup")
+
+  // Add this useEffect to check for redirect parameter in URL
+  useEffect(() => {
+    // Check if there's a redirect parameter in the URL
+    const params = new URLSearchParams(window.location.search)
+    const redirect = params.get("redirect")
+    if (redirect) {
+      setRedirectPath(redirect)
+    }
+  }, [])
+
+  // Update the handleSubmit function to use the redirectPath
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -35,17 +49,10 @@ export default function RegisterPage() {
 
     try {
       await register(name, email, password)
-      toast({
-        title: "Registration successful",
-        description: "Welcome to MoneyMinder!",
-      })
-      router.push("/dashboard")
+      router.push(redirectPath)
     } catch (error) {
-      toast({
-        title: "Registration failed",
-        description: "There was an error creating your account.",
-        variant: "destructive",
-      })
+      // Error is already handled in the register function
+      console.error("Registration error:", error)
     }
   }
 

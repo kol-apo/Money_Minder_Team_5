@@ -3,11 +3,14 @@
 import type React from "react"
 
 import { createContext, useContext, useState, useEffect } from "react"
+import { authAPI, userAPI } from "@/lib/api"
+import { toast } from "@/hooks/use-toast"
 
 type User = {
   id: string
   name: string
   email: string
+  currency: string
   avatar?: string
 }
 
@@ -17,6 +20,7 @@ type AuthContextType = {
   login: (email: string, password: string) => Promise<void>
   register: (name: string, email: string, password: string) => Promise<void>
   logout: () => void
+  updateUser: (userData: Partial<User>) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -27,58 +31,98 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Check if user is logged in on mount
   useEffect(() => {
-    // Initialize with a demo user for frontend-only functionality
-    setUser({
-      id: "user_123",
-      name: "Demo User",
-      email: "demo@example.com",
-      avatar: "/placeholder.svg?height=40&width=40",
-    })
-    setIsLoading(false)
+    const checkLoggedIn = async () => {
+      const token = localStorage.getItem("token")
+
+      if (token) {
+        try {
+          setIsLoading(true)
+          const { user } = await authAPI.getCurrentUser()
+          setUser({
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            currency: user.currency,
+            avatar: user.avatar,
+          })
+        } catch (error) {
+          console.error("Failed to get current user:", error)
+          localStorage.removeItem("token")
+        } finally {
+          setIsLoading(false)
+        }
+      } else {
+        setIsLoading(false)
+      }
+    }
+
+    checkLoggedIn()
   }, [])
 
-  // Mock login function - in a real app, this would call your API
+  // Login function
   const login = async (email: string, password: string) => {
     setIsLoading(true)
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const { user, token } = await authAPI.login({ email, password })
 
-      // Mock user data
-      const userData: User = {
-        id: "user_123",
-        name: "Demo User",
-        email: email,
-        avatar: "/placeholder.svg?height=40&width=40",
-      }
+      // Save token to localStorage
+      localStorage.setItem("token", token)
 
-      setUser(userData)
-    } catch (error) {
+      // Set user in state
+      setUser({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        currency: user.currency,
+        avatar: user.avatar,
+      })
+
+      toast({
+        title: "Login successful",
+        description: "Welcome back to MoneyMinder!",
+      })
+    } catch (error: any) {
       console.error("Login failed:", error)
+      toast({
+        title: "Login failed",
+        description: error.response?.data?.message || "Please check your credentials and try again.",
+        variant: "destructive",
+      })
       throw error
     } finally {
       setIsLoading(false)
     }
   }
 
-  // Mock register function
+  // Register function
   const register = async (name: string, email: string, password: string) => {
     setIsLoading(true)
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const { user, token } = await authAPI.register({ name, email, password })
 
-      // Mock user data
-      const userData: User = {
-        id: "user_" + Math.random().toString(36).substr(2, 9),
-        name: name,
-        email: email,
-        avatar: "/placeholder.svg?height=40&width=40",
-      }
+      // Save token to localStorage
+      localStorage.setItem("token", token)
 
-      setUser(userData)
-    } catch (error) {
+      // Set user in state
+      setUser({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        currency: user.currency,
+        avatar: user.avatar,
+      })
+
+      toast({
+        title: "Registration successful",
+        description: "Welcome to MoneyMinder!",
+      })
+    } catch (error: any) {
       console.error("Registration failed:", error)
+      toast({
+        title: "Registration failed",
+        description: error.response?.data?.message || "There was an error creating your account.",
+        variant: "destructive",
+      })
       throw error
     } finally {
       setIsLoading(false)
@@ -87,10 +131,63 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Logout function
   const logout = () => {
+    authAPI.logout()
     setUser(null)
+    toast({
+      title: "Logged out",
+      description: "You have been successfully logged out.",
+    })
+
+    // Redirect to home page after logout
+    window.location.href = "/"
   }
 
-  return <AuthContext.Provider value={{ user, isLoading, login, register, logout }}>{children}</AuthContext.Provider>
+  // Update user function
+  const updateUser = async (userData: Partial<User>) => {
+    setIsLoading(true)
+    try {
+      const { user } = await userAPI.updateProfile(userData)
+
+      // Update user in state
+      setUser((prevUser) => {
+        if (!prevUser) return null
+        return {
+          ...prevUser,
+          ...user,
+        }
+      })
+
+      toast({
+        title: "Profile updated",
+        description: "Your profile has been updated successfully.",
+      })
+    } catch (error: any) {
+      console.error("Update user failed:", error)
+      toast({
+        title: "Update failed",
+        description: error.response?.data?.message || "There was an error updating your profile.",
+        variant: "destructive",
+      })
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoading,
+        login,
+        register,
+        logout,
+        updateUser,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  )
 }
 
 export function useAuth() {

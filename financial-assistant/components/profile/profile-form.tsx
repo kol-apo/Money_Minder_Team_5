@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { toast } from "@/hooks/use-toast"
 import { useFinancial } from "@/components/financial-context"
+import { useAuth } from "@/components/auth-provider"
 
 const profileFormSchema = z.object({
   name: z.string().min(2, {
@@ -24,28 +24,35 @@ const profileFormSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileFormSchema>
 
 export function ProfileForm() {
+  const { user, updateUser } = useAuth()
   const { currency, setCurrency } = useFinancial()
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      name: "John Doe",
-      email: "john.doe@example.com",
-      bio: "I'm a software engineer interested in personal finance and investing.",
-      currency: currency,
+      name: user?.name || "",
+      email: user?.email || "",
+      bio: "I'm interested in personal finance and investing.",
+      currency: user?.currency || currency,
     },
   })
 
-  function onSubmit(data: ProfileFormValues) {
-    // Update currency if changed
-    if (data.currency !== currency) {
-      setCurrency(data.currency as any)
-    }
+  async function onSubmit(data: ProfileFormValues) {
+    try {
+      // Update user profile
+      await updateUser({
+        name: data.name,
+        email: data.email,
+        currency: data.currency as any,
+      })
 
-    toast({
-      title: "Profile updated",
-      description: "Your profile has been updated successfully.",
-    })
+      // Update currency in financial context if changed
+      if (data.currency !== currency) {
+        setCurrency(data.currency as any)
+      }
+    } catch (error) {
+      console.error("Failed to update profile:", error)
+    }
   }
 
   return (

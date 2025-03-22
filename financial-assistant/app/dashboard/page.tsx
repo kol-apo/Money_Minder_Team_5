@@ -13,16 +13,30 @@ import { Download, Filter, Plus } from "lucide-react"
 import { useFinancial } from "@/components/financial-context"
 import { AddTransactionDialog } from "@/components/dashboard/add-transaction-dialog"
 import { useState } from "react"
+import { useUser } from "@/components/user-context"
 
 export default function DashboardPage() {
   const router = useRouter()
-  const { income, expenses, balance, savingsRate, formatCurrency, isLoading } = useFinancial()
+  const { income, expenses, balance, savingsRate, formatCurrency, isLoading, fetchTransactions, fetchSavingsGoals } =
+    useFinancial()
   const [isTransactionDialogOpen, setIsTransactionDialogOpen] = useState(false)
+  const { user } = useUser()
 
   // If user has no financial data, redirect to setup
   useEffect(() => {
-    // No redirection needed
-  }, [])
+    if (!user && !isLoading) {
+      router.push("/auth/login")
+    }
+  }, [user, isLoading, router])
+
+  // Add this useEffect to fetch transactions when the dashboard loads
+  useEffect(() => {
+    if (user && !isLoading) {
+      // Fetch transactions and savings goals
+      fetchTransactions()
+      fetchSavingsGoals()
+    }
+  }, [user, isLoading, fetchTransactions, fetchSavingsGoals])
 
   return (
     <div className="container py-8">

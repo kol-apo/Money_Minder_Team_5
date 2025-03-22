@@ -1,40 +1,44 @@
 "use client"
 
+import { CardFooter } from "@/components/ui/card"
+
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Wallet } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuth } from "@/components/auth-provider"
-import { toast } from "@/hooks/use-toast"
 
 export default function LoginPage() {
   const router = useRouter()
   const { login, isLoading } = useAuth()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [redirectPath, setRedirectPath] = useState("/dashboard")
+
+  useEffect(() => {
+    // Check if there's a redirect parameter in the URL
+    const params = new URLSearchParams(window.location.search)
+    const redirect = params.get("redirect")
+    if (redirect) {
+      setRedirectPath(redirect)
+    }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     try {
       await login(email, password)
-      toast({
-        title: "Login successful",
-        description: "Welcome back to MoneyMinder!",
-      })
-      router.push("/dashboard")
+      router.push(redirectPath)
     } catch (error) {
-      toast({
-        title: "Login failed",
-        description: "Please check your credentials and try again.",
-        variant: "destructive",
-      })
+      // Error is already handled in the login function
+      console.error("Login error:", error)
     }
   }
 

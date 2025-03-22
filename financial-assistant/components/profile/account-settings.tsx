@@ -9,16 +9,63 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { toast } from "@/hooks/use-toast"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+// Import useAuth
+import { useAuth } from "@/components/auth-provider"
+import { userAPI } from "@/lib/api"
 
 export function AccountSettings() {
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false)
 
-  const handlePasswordChange = (e: React.FormEvent<HTMLFormElement>) => {
+  // Add useAuth to the component
+  const { user } = useAuth()
+
+  // Update the handlePasswordChange function
+  const handlePasswordChange = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    toast({
-      title: "Password updated",
-      description: "Your password has been updated successfully.",
-    })
+
+    const formData = new FormData(e.currentTarget)
+    const currentPassword = formData.get("current-password") as string
+    const newPassword = formData.get("new-password") as string
+    const confirmPassword = formData.get("confirm-password") as string
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast({
+        title: "Missing fields",
+        description: "Please fill in all password fields.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Passwords don't match",
+        description: "New password and confirmation do not match.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    try {
+      await userAPI.updatePassword({
+        currentPassword,
+        newPassword,
+      })
+
+      toast({
+        title: "Password updated",
+        description: "Your password has been updated successfully.",
+      })
+
+      // Reset form
+      e.currentTarget.reset()
+    } catch (error: any) {
+      toast({
+        title: "Update failed",
+        description: error.response?.data?.message || "Failed to update password.",
+        variant: "destructive",
+      })
+    }
   }
 
   const handleTwoFactorToggle = (checked: boolean) => {

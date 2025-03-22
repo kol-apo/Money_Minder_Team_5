@@ -29,7 +29,7 @@ export function AddTransactionDialog({ open, onOpenChange }: AddTransactionDialo
   const [category, setCategory] = useState("Other")
   const [transactionType, setTransactionType] = useState("expense")
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!description || !amount || Number.parseFloat(amount) <= 0) {
@@ -44,26 +44,24 @@ export function AddTransactionDialog({ open, onOpenChange }: AddTransactionDialo
     // Convert amount to positive or negative based on transaction type
     const transactionAmount = transactionType === "income" ? Number.parseFloat(amount) : -Number.parseFloat(amount)
 
-    // Add the transaction
-    addTransaction({
-      date: new Date().toISOString().split("T")[0],
-      description,
-      amount: transactionAmount,
-      category: transactionType === "income" ? "Income" : category,
-    })
+    try {
+      // Add the transaction
+      await addTransaction({
+        date: new Date().toISOString().split("T")[0],
+        description,
+        amount: transactionAmount,
+        category: transactionType === "income" ? "Income" : category,
+      })
 
-    // Reset form and close dialog
-    setDescription("")
-    setAmount("")
-    setCategory("Other")
-    setTransactionType("expense")
-
-    toast({
-      title: "Transaction added",
-      description: "Your transaction has been recorded successfully.",
-    })
-
-    onOpenChange(false)
+      // Reset form and close dialog
+      setDescription("")
+      setAmount("")
+      setCategory("Other")
+      setTransactionType("expense")
+      onOpenChange(false)
+    } catch (error) {
+      console.error("Failed to add transaction:", error)
+    }
   }
 
   return (

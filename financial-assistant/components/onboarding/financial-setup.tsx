@@ -28,6 +28,7 @@ export function FinancialSetup() {
     setSelectedCurrency(e.target.value)
   }
 
+  // Update the handleNextStep function to add transactions when completing setup
   const handleNextStep = () => {
     if (step === 1) {
       if (!monthlySalary || Number.parseFloat(monthlySalary) <= 0) {
@@ -38,9 +39,35 @@ export function FinancialSetup() {
         })
         return
       }
+
+      // Update currency
+      setCurrency(selectedCurrency as any)
+
       setStep(2)
     } else if (step === 2) {
-      // Just show a success message and redirect
+      // Add income transaction
+      if (monthlySalary && Number.parseFloat(monthlySalary) > 0) {
+        addIncome(Number.parseFloat(monthlySalary))
+      }
+
+      // Add expense transactions
+      if (housingExpense && Number.parseFloat(housingExpense) > 0) {
+        addExpense(Number.parseFloat(housingExpense), "Housing")
+      }
+
+      if (foodExpense && Number.parseFloat(foodExpense) > 0) {
+        addExpense(Number.parseFloat(foodExpense), "Food")
+      }
+
+      if (transportationExpense && Number.parseFloat(transportationExpense) > 0) {
+        addExpense(Number.parseFloat(transportationExpense), "Transportation")
+      }
+
+      if (otherExpenses && Number.parseFloat(otherExpenses) > 0) {
+        addExpense(Number.parseFloat(otherExpenses), "Other")
+      }
+
+      // Show a success message and redirect
       toast({
         title: "Financial setup complete",
         description: "Your financial information has been saved.",

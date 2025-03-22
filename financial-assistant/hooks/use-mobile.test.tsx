@@ -1,30 +1,51 @@
 "use client"
 
-import { renderHook } from "@testing-library/react"
+import { renderHook, act } from "@testing-library/react"
 import { useMobile } from "./use-mobile"
-import { useMediaQuery } from "react-responsive"
+import { describe, afterEach, test, expect } from "@jest/globals"
 
-// Mock react-responsive
-jest.mock("react-responsive", () => ({
-  useMediaQuery: jest.fn(),
-}))
+// Mock window.innerWidth
+const originalInnerWidth = window.innerWidth
 
 describe("useMobile hook", () => {
+  afterEach(() => {
+    // Reset innerWidth to original value after each test
+    Object.defineProperty(window, "innerWidth", {
+      writable: true,
+      value: originalInnerWidth,
+    })
+  })
+
   test("returns true for mobile devices", () => {
-    ;(useMediaQuery as jest.Mock).mockReturnValue(true)
+    // Set viewport width to mobile size
+    Object.defineProperty(window, "innerWidth", {
+      writable: true,
+      value: 767,
+    })
+
+    // Trigger resize event
+    act(() => {
+      window.dispatchEvent(new Event("resize"))
+    })
+
     const { result } = renderHook(() => useMobile())
     expect(result.current).toBe(true)
   })
 
   test("returns false for non-mobile devices", () => {
-    ;(useMediaQuery as jest.Mock).mockReturnValue(false)
+    // Set viewport width to desktop size
+    Object.defineProperty(window, "innerWidth", {
+      writable: true,
+      value: 1024,
+    })
+
+    // Trigger resize event
+    act(() => {
+      window.dispatchEvent(new Event("resize"))
+    })
+
     const { result } = renderHook(() => useMobile())
     expect(result.current).toBe(false)
-  })
-
-  test("uses correct media query", () => {
-    renderHook(() => useMobile())
-    expect(useMediaQuery).toHaveBeenCalledWith({ query: "(max-width: 767px)" })
   })
 })
 

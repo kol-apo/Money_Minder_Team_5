@@ -45,7 +45,7 @@ export default function Home() {
 
                 {/* CTA Buttons */}
                 <div className="flex flex-col gap-3 sm:flex-row">
-                  <Link href="/setup">
+                  <Link href="/auth/register">
                     <Button size="lg" className="w-full sm:w-auto gap-2 text-base">
                       Get Started <ArrowRight className="h-4 w-4" />
                     </Button>
@@ -252,7 +252,7 @@ export default function Home() {
                       className="h-6 w-6 text-primary"
                     >
                       <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"></path>
-                      <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"></path>
+                      <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"></path>
                     </svg>
                   </div>
                   <p className="text-xl md:text-2xl font-medium leading-relaxed">
