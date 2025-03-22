@@ -14,16 +14,16 @@ This is a Next.js application that provides a simple financial assistant. The ap
 ## Screenshots
 
 ### Landing Page
-![Detailed View](blob:https://imgur.com/c2893553-3a7b-488a-831f-d8d7a6371b55)
+![Detailed View](https://i.imgur.com/yQ1lUEH.png)
 
 ### Login
 ![Add Transaction](https://i.imgur.com/fGGtaZG.png)
 
 ### Dashboard
-![Dashboard](blob:https://imgur.com/12610e69-be6c-44ec-acde-bea23b272752)
+![Dashboard](https://i.imgur.com/vdrWtOU.png)
 
 ### Transactions
-![Transactions](blob:https://imgur.com/a44b94cb-67ec-4332-9b54-7bb1f905ef50)
+![Transactions](https://i.imgur.com/0tB2Pto.png)
 
 
 ## Technologies Used
