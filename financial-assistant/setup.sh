@@ -1,5 +1,6 @@
 # Create setup.sh file
-echo '#!/bin/bash
+#!/bin/bash
+
 echo "Installing server dependencies..."
 cd server
 npm install
