@@ -26,5 +26,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+// filepath: c:\Users\LENOVO\.vscode\Money_Minder_Team_5\financial-assistant\server\.gitignore
 package-lock.json
-yarn.lock
