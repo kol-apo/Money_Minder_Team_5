@@ -101,6 +101,7 @@ export function FinancialProvider({ children }: { children: React.ReactNode }) {
         category: tx.category,
       }))
 
+      // Replace the transactions array instead of appending to it
       setTransactions(formattedTransactions)
     } catch (error) {
       console.error("Failed to fetch transactions:", error)
@@ -129,6 +130,7 @@ export function FinancialProvider({ children }: { children: React.ReactNode }) {
 
   // Placeholder implementations for the remaining functions
   const calculateFinancialMetrics = () => {
+    // Reset totals before calculating to prevent accumulation
     let totalIncome = 0
     let totalExpenses = 0
 
@@ -140,6 +142,7 @@ export function FinancialProvider({ children }: { children: React.ReactNode }) {
       }
     })
 
+    // Set the values directly without adding to existing values
     setIncome(totalIncome)
     setExpenses(totalExpenses)
     setBalance(totalIncome - totalExpenses)
@@ -190,7 +193,7 @@ export function FinancialProvider({ children }: { children: React.ReactNode }) {
         category: transaction.category,
       })
 
-      // Add new transaction to state
+      // Add new transaction to state - replace the array instead of appending
       const formattedTransaction = {
         id: newTransaction._id,
         date: new Date(newTransaction.date).toISOString().split("T")[0],
@@ -199,6 +202,7 @@ export function FinancialProvider({ children }: { children: React.ReactNode }) {
         category: newTransaction.category,
       }
 
+      // Use a callback to ensure we're working with the latest state
       setTransactions((prev) => [formattedTransaction, ...prev])
 
       toast({

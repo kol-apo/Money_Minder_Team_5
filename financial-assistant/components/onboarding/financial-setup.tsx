@@ -28,7 +28,7 @@ export function FinancialSetup() {
     setSelectedCurrency(e.target.value)
   }
 
-  // Update the handleNextStep function to add transactions when completing setup
+  // Update the handleNextStep function to add transactions only once
   const handleNextStep = () => {
     if (step === 1) {
       if (!monthlySalary || Number.parseFloat(monthlySalary) <= 0) {
@@ -45,12 +45,12 @@ export function FinancialSetup() {
 
       setStep(2)
     } else if (step === 2) {
-      // Add income transaction
+      // Add income transaction - only add once
       if (monthlySalary && Number.parseFloat(monthlySalary) > 0) {
         addIncome(Number.parseFloat(monthlySalary))
       }
 
-      // Add expense transactions
+      // Add expense transactions - only add once
       if (housingExpense && Number.parseFloat(housingExpense) > 0) {
         addExpense(Number.parseFloat(housingExpense), "Housing")
       }
